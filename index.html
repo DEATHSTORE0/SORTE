@@ -115,7 +115,7 @@ function createCard(){
   text.style.display="flex";
   text.style.alignItems="center";
   text.style.justifyContent="center";
-  text.innerHTML=value+" 💎";
+  text.innerHTML=value+"k 💎";
 
   const canvas=document.createElement("canvas");
   canvas.width=100;
@@ -151,7 +151,7 @@ function createCard(){
       scratches++;
       total+=value;
       if(scratches===3){
-        document.getElementById("result").innerText="Você ganhou "+total+" gemas";
+        document.getElementById("result").innerText="Você ganhou "+total+"m gemas";
       }
     }
   }
