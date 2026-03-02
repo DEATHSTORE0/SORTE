@@ -83,6 +83,8 @@ const keys=[
 let scratches=0;
 let total=0;
 
+const premiosBaixos=[300000,400000,500000,600000,700000];
+
 function checkKey(){
   const k=document.getElementById("keyInput").value.trim();
   if(!keys.includes(k)){
@@ -100,11 +102,25 @@ function startGame(){
   scratches=0;
   total=0;
   document.getElementById("result").innerText="";
-  for(let i=0;i<6;i++){ createCard(); }
+
+  // Criar array com 3 baixos + 2 médios + 1 prêmio gigante
+  let premios=[
+    ...premiosBaixos.sort(()=>0.5-Math.random()).slice(0,3),
+    1000000,
+    3000000,
+    5000000 // sempre terá 5M
+  ];
+
+  // embaralhar
+  premios=premios.sort(()=>0.5-Math.random());
+
+  premios.forEach((valor,index)=>{
+    createCard(valor,index);
+  });
 }
 
-function createCard(){
-  const value=Math.floor(Math.random()*201)+300;
+function createCard(value,index){
+
   const card=document.createElement("div");
   card.className="card";
 
@@ -115,7 +131,7 @@ function createCard(){
   text.style.display="flex";
   text.style.alignItems="center";
   text.style.justifyContent="center";
-  text.innerHTML=value+"k 💎";
+  text.innerHTML=(value/1000000)+"M 💎";
 
   const canvas=document.createElement("canvas");
   canvas.width=100;
@@ -132,9 +148,11 @@ function createCard(){
   function scratch(e){
     if(!holding || revealed || scratches>=3) return;
     e.preventDefault();
+
     const rect=canvas.getBoundingClientRect();
     const x=(e.touches?e.touches[0].clientX:e.clientX)-rect.left;
     const y=(e.touches?e.touches[0].clientY:e.clientY)-rect.top;
+
     ctx.beginPath();
     ctx.arc(x,y,15,0,Math.PI*2);
     ctx.fill();
@@ -149,9 +167,20 @@ function createCard(){
       revealed=true;
       canvas.remove();
       scratches++;
-      total+=value;
+
+      // Só soma se for prêmio baixo
+      if(premiosBaixos.includes(value)){
+        total+=value;
+      }
+
       if(scratches===3){
-        document.getElementById("result").innerText="Você ganhou "+total+"m gemas";
+        document.getElementById("result").innerText=
+        "Você ganhou "+(total/1000000)+"M gemas";
+
+        // Revelar automaticamente os outros
+        document.querySelectorAll("canvas").forEach(c=>{
+          c.remove();
+        });
       }
     }
   }
@@ -159,6 +188,7 @@ function createCard(){
   canvas.addEventListener("mousedown",()=>holding=true);
   canvas.addEventListener("mouseup",()=>holding=false);
   canvas.addEventListener("mousemove",scratch);
+
   canvas.addEventListener("touchstart",()=>holding=true);
   canvas.addEventListener("touchend",()=>holding=false);
   canvas.addEventListener("touchmove",scratch);
