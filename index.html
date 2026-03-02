@@ -14,7 +14,6 @@ body{
   text-align:center;
 }
 h1{ margin-top:30px; }
-#login,#game{ margin-top:30px; }
 
 input{
   padding:10px;
@@ -48,13 +47,13 @@ button{
   overflow:hidden;
 }
 
-.card.locked{
-  background:#2a2a2a;
+.value{
+  position:absolute;
+  width:100%;
+  height:100%;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-weight:bold;
-  color:#ff4dff;
 }
 
 canvas{
@@ -85,16 +84,15 @@ canvas{
 
 // 🔑 15 KEYS
 const keys=[
-"DS-A1B2","DS-C3D4","DS-E5F6",
-"DS-G7H8","DS-I9J0","DS-K1L2",
-"DS-M3N4","DS-O5P6","DS-Q7R8",
-"DS-S9T0","DS-U1V2","DS-W3X4",
-"DS-Y5Z6","DS-AB7C","DS-DE8F"
+"DS-A1B2","DS-C3D4","DS-E5F6","DS-G7H8","DS-I9J0",
+"DS-K1L2","DS-M3N4","DS-O5P6","DS-Q7R8","DS-S9T0",
+"DS-U1V2","DS-W3X4","DS-Y5Z6","DS-AB7C","DS-DE8F"
 ];
 
 let scratches=0;
 let total=0;
 let currentKey=null;
+let cardsData=[];
 
 function checkKey(){
   const k=document.getElementById("keyInput").value.trim();
@@ -121,47 +119,37 @@ function startGame(){
   grid.innerHTML="";
   scratches=0;
   total=0;
+  cardsData=[];
   document.getElementById("result").innerText="";
 
-  let premios=[];
-
-  // 5 valores baixos (360K–520K)
-  for(let i=0;i<5;i++){
-    let valor=Math.floor(Math.random()*161)+360;
-    premios.push({valor:valor, tipo:"baixo"});
+  // criar 9 cartas (5 baixas reais + 4 armadilhas)
+  for(let i=0;i<9;i++){
+    if(i<5){
+      cardsData.push({tipo:"baixo", valor:randomBaixo()});
+    }else{
+      cardsData.push({tipo:"armadilha"});
+    }
   }
 
-  // 4 valores altos fixos
-  const altos=[5000,12000,25000,45000];
+  cardsData.sort(()=>0.5-Math.random());
 
-  altos.forEach(v=>{
-    premios.push({valor:v, tipo:"alto"});
-  });
-
-  premios=premios.sort(()=>0.5-Math.random());
-
-  premios.forEach(p=>{
-    if(p.tipo==="baixo"){
-      createScratchCard(p.valor);
-    }else{
-      createLockedCard(p.valor);
-    }
+  cardsData.forEach((card,index)=>{
+    createCard(card,index);
   });
 }
 
-function createScratchCard(value){
+function randomBaixo(){
+  return Math.floor(Math.random()*161)+360;
+}
+
+function createCard(data,index){
 
   const card=document.createElement("div");
   card.className="card";
 
-  const text=document.createElement("div");
-  text.style.position="absolute";
-  text.style.width="100%";
-  text.style.height="100%";
-  text.style.display="flex";
-  text.style.alignItems="center";
-  text.style.justifyContent="center";
-  text.innerHTML=value+"K 💎";
+  const valueDiv=document.createElement("div");
+  valueDiv.className="value";
+  valueDiv.innerHTML="?";
 
   const canvas=document.createElement("canvas");
   canvas.width=100;
@@ -197,7 +185,18 @@ function createScratchCard(value){
       revealed=true;
       canvas.remove();
       scratches++;
-      total+=value;
+
+      let valor;
+
+      if(data.tipo==="baixo"){
+        valor=data.valor;
+      }else{
+        // 🔥 se clicar numa armadilha vira valor baixo
+        valor=randomBaixo();
+      }
+
+      valueDiv.innerHTML=valor+"K 💎";
+      total+=valor;
 
       if(scratches===3){
         finishGame();
@@ -212,22 +211,26 @@ function createScratchCard(value){
   canvas.addEventListener("touchend",()=>holding=false);
   canvas.addEventListener("touchmove",scratch);
 
-  card.appendChild(text);
+  card.appendChild(valueDiv);
   card.appendChild(canvas);
-  document.getElementById("grid").appendChild(card);
-}
-
-function createLockedCard(value){
-  const card=document.createElement("div");
-  card.className="card locked";
-  card.innerHTML=(value/1000)+"M 💎";
   document.getElementById("grid").appendChild(card);
 }
 
 function finishGame(){
 
-  // 🔒 marca key como usada
   localStorage.setItem("used_"+currentKey,"true");
+
+  // revelar os altos
+  const altos=["5M 💎","12M 💎","25M 💎","45M 💎"];
+  let cards=document.querySelectorAll(".value");
+
+  let count=0;
+  cards.forEach(v=>{
+    if(v.innerHTML==="?"){
+      v.innerHTML=altos[count];
+      count++;
+    }
+  });
 
   if(total>=1000){
     document.getElementById("result").innerText=
@@ -236,8 +239,6 @@ function finishGame(){
     document.getElementById("result").innerText=
     "Você ganhou "+total+"K gemas";
   }
-
-  document.querySelectorAll("canvas").forEach(c=>c.remove());
 }
 
 </script>
