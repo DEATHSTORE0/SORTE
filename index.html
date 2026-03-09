@@ -108,7 +108,9 @@ const keys=[
 "DS-U1V2","DS-W3X4","DS-Y5Z6","DS-AB7C","DS-DE8F"
 ];
 
-const premiosBaixos=[
+/* prêmios que podem ser ganhos */
+
+const premiosGanhos=[
 "1M 💎",
 "1.2M 💎",
 "1.3M 💎",
@@ -116,7 +118,9 @@ const premiosBaixos=[
 "1.5M 💎"
 ];
 
-const premiosAltos=[
+/* prêmios psicológicos */
+
+const premiosFake=[
 "8M 💎",
 "17M 💎",
 "33M 💎",
@@ -125,7 +129,6 @@ const premiosAltos=[
 
 let scratched=false;
 let currentKey=null;
-let premioGanho=null;
 
 function checkKey(){
 
@@ -156,36 +159,44 @@ const grid=document.getElementById("grid");
 
 grid.innerHTML="";
 scratched=false;
-premioGanho=null;
 
 document.getElementById("result").innerText="";
 
 let valores=[];
 
-/* escolhe posição aleatória do prêmio */
+/* prêmio real */
+
+const premioReal=premiosGanhos[Math.floor(Math.random()*premiosGanhos.length)];
 
 const posicaoPremio=Math.floor(Math.random()*9);
+
+/* gerar valores */
 
 for(let i=0;i<9;i++){
 
 if(i===posicaoPremio){
 
-premioGanho=premiosBaixos[Math.floor(Math.random()*premiosBaixos.length)];
-valores.push(premioGanho);
-
-}else if(i<posicaoPremio+premiosAltos.length){
-
-valores.push(premiosAltos[i%premiosAltos.length]);
+valores.push(premioReal);
 
 }else{
 
-valores.push(premiosBaixos[Math.floor(Math.random()*premiosBaixos.length)]);
+/* chance de prêmio psicológico */
+
+if(Math.random()<0.4){
+
+valores.push(premiosFake[Math.floor(Math.random()*premiosFake.length)]);
+
+}else{
+
+valores.push(premiosGanhos[Math.floor(Math.random()*premiosGanhos.length)]);
 
 }
 
 }
 
-valores.sort(()=>Math.random()-0.5);
+}
+
+/* criar cartas */
 
 for(let i=0;i<9;i++){
 
