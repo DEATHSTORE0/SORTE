@@ -3,37 +3,67 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Death Store Raspadinha</title>
 
 <style>
 
 body{
 margin:0;
-font-family:Arial;
-background:linear-gradient(180deg,#2b0050,#0d001a);
+font-family:Arial, sans-serif;
+background:linear-gradient(180deg,#1b0033,#060010);
 color:white;
 text-align:center;
 }
 
 h1{
 margin-top:30px;
+font-size:36px;
+letter-spacing:3px;
+color:#f2ccff;
+text-shadow:0 0 20px #a200ff;
+}
+
+input{
+padding:12px;
+border:none;
+border-radius:8px;
+width:200px;
+margin-top:10px;
+}
+
+button{
+padding:12px 18px;
+border:none;
+border-radius:8px;
+background:#8a00ff;
+color:white;
+font-weight:bold;
+margin-left:5px;
+cursor:pointer;
+box-shadow:0 0 10px #8a00ff;
+}
+
+button:hover{
+transform:scale(1.05);
 }
 
 .grid{
-margin-top:20px;
+margin-top:30px;
 display:grid;
-grid-template-columns:repeat(3,100px);
-gap:15px;
+grid-template-columns:repeat(3,110px);
+gap:18px;
 justify-content:center;
 }
 
 .card{
 position:relative;
-width:100px;
-height:100px;
-background:#111;
-border-radius:10px;
+width:110px;
+height:110px;
+background:#140024;
+border-radius:15px;
 overflow:hidden;
+box-shadow:0 0 15px #7a00ff;
 }
 
 .value{
@@ -43,8 +73,8 @@ height:100%;
 display:flex;
 align-items:center;
 justify-content:center;
-font-weight:bold;
 font-size:18px;
+font-weight:bold;
 }
 
 canvas{
@@ -53,36 +83,37 @@ top:0;
 left:0;
 }
 
-input{
-padding:10px;
-border-radius:6px;
-border:none;
-}
-
-button{
-padding:10px 15px;
-border:none;
-border-radius:6px;
-background:#7a00ff;
-color:white;
-font-weight:bold;
-}
-
 #result{
-margin-top:20px;
-font-size:20px;
+margin-top:30px;
+font-size:24px;
+background:#140022;
+padding:20px;
+border-radius:12px;
+width:260px;
+margin-left:auto;
+margin-right:auto;
+box-shadow:0 0 20px #8a00ff;
+animation:pop 0.6s ease;
+}
+
+@keyframes pop{
+0%{transform:scale(0.5);opacity:0;}
+100%{transform:scale(1);opacity:1;}
 }
 
 </style>
 </head>
 <body>
 
-<h1>DEATH STORE RASPADINHA</h1>
+<h1>DEATH STORE</h1>
 
 <div id="login">
 
-<input id="keyInput" placeholder="Digite sua key">
-<button onclick="checkKey()">Entrar</button>
+<p>Digite sua Key</p>
+
+<input id="keyInput" placeholder="DS-XXXX">
+<button onclick="checkKey()">ENTRAR</button>
+
 <p id="msg"></p>
 
 </div>
@@ -99,43 +130,58 @@ font-size:20px;
 
 <script>
 
-const keys=[
-"DS-7F2K9",
-"DS-9L3X1",
-"DS-4P8Q6",
-"DS-6M1T7",
-"DS-8Z5R2",
-"DS-3H9C4",
-"DS-1V7B8",
-"DS-2N6A5",
-"DS-5D4S9",
-"DS-8J2K1"
+const keys={
+
+"DS-A1K9":"1.1M 💎",
+"DS-B3L2":"1.2M 💎",
+"DS-C7P4":"1.3M 💎",
+"DS-D8T6":"1.4M 💎",
+"DS-E2X5":"1.5M 💎",
+
+"DS-F4Q1":"1.2M 💎",
+"DS-G6M3":"1.1M 💎",
+"DS-H9Z7":"1.4M 💎",
+"DS-J2K8":"1.3M 💎",
+"DS-K5R6":"1.5M 💎",
+
+"DS-L1V4":"1.2M 💎",
+"DS-M7S9":"1.3M 💎",
+"DS-N8F2":"1.4M 💎",
+"DS-P3H5":"1.1M 💎",
+"DS-Q4Y7":"1.5M 💎",
+
+"DS-R9C1":"1.2M 💎",
+"DS-S6D8":"1.3M 💎",
+"DS-T5B4":"1.4M 💎",
+"DS-U2E7":"1.1M 💎",
+
+"DS-ULTRA40":"40M 💎"
+
+};
+
+const fakeHigh=[
+"17M 💎",
+"33M 💎",
+"50M 💎"
 ];
 
-const premiosBaixos=[
-"1M 💎",
+const fakeLow=[
+"1.1M 💎",
 "1.2M 💎",
 "1.3M 💎",
 "1.4M 💎",
 "1.5M 💎"
 ];
 
-const premiosAltos=[
-"8M 💎",
-"17M 💎",
-"33M 💎",
-"45M 💎"
-];
-
-let scratched=false;
 let currentKey=null;
+let scratched=false;
 let valores=[];
 
 function checkKey(){
 
 const k=document.getElementById("keyInput").value.trim();
 
-if(!keys.includes(k)){
+if(!keys[k]){
 document.getElementById("msg").innerText="Key inválida";
 return;
 }
@@ -160,30 +206,21 @@ const grid=document.getElementById("grid");
 
 grid.innerHTML="";
 scratched=false;
-valores=[];
 
-/* posição do prêmio baixo que o jogador vai pegar */
+const premioReal=keys[currentKey];
 
-const posicaoReal=Math.floor(Math.random()*9);
+let lista=[];
 
-for(let i=0;i<9;i++){
+lista.push(...fakeHigh);
+lista.push(...fakeLow);
+lista.push(premioReal);
 
-if(i===posicaoReal){
+lista=lista.sort(()=>Math.random()-0.5);
 
-valores.push(premiosBaixos[Math.floor(Math.random()*premiosBaixos.length)]);
-
-}else{
-
-valores.push(premiosAltos[Math.floor(Math.random()*premiosAltos.length)]);
-
-}
-
-}
+valores=lista;
 
 for(let i=0;i<9;i++){
-
 createCard(i);
-
 }
 
 }
@@ -199,13 +236,13 @@ valueDiv.innerHTML=valores[index];
 
 const canvas=document.createElement("canvas");
 
-canvas.width=100;
-canvas.height=100;
+canvas.width=110;
+canvas.height=110;
 
 const ctx=canvas.getContext("2d");
 
-ctx.fillStyle="#999";
-ctx.fillRect(0,0,100,100);
+ctx.fillStyle="#bbbbbb";
+ctx.fillRect(0,0,110,110);
 
 ctx.globalCompositeOperation="destination-out";
 
@@ -226,20 +263,17 @@ ctx.beginPath();
 ctx.arc(x,y,18,0,Math.PI*2);
 ctx.fill();
 
-const pixels=ctx.getImageData(0,0,100,100).data;
+const pixels=ctx.getImageData(0,0,110,110).data;
 
 let count=0;
 
 for(let i=3;i<pixels.length;i+=40){
-
 if(pixels[i]===0) count++;
-
 }
 
-if(count>160){
+if(count>180){
 
 scratched=true;
-
 finishGame(index);
 
 }
@@ -265,14 +299,14 @@ function finishGame(index){
 
 localStorage.setItem("used_"+currentKey,"true");
 
-/* revelar todos */
-
 document.querySelectorAll("canvas").forEach(c=>{
 c.remove();
 });
 
+const premio=valores[index];
+
 document.getElementById("result").innerHTML=
-"🎉 Você ganhou: <b>"+valores[index]+"</b>";
+"🎉 PARABÉNS!<br><br>VOCÊ GANHOU:<br><span style='font-size:32px;color:#00ffd5;'>"+premio+"</span>";
 
 }
 
