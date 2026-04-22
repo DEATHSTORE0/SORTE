@@ -3,329 +3,140 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Death Store | Raspadinha Premium</title>
-
+    <title>Death Store | Access</title>
     <style>
-        :root {
-            --primary-red: #ff0000;
-            --dark-red: #7a0000;
-            --bg-black: #0a0a0a;
-            --card-bg: #1a1a1a;
-            --glow: 0 0 15px rgba(255, 0, 0, 0.6);
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Arial', sans-serif; }
+        body { background-color: #000; color: #fff; height: 100vh; display: flex; flex-direction: column; }
 
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background: radial-gradient(circle at center, #2b0000 0%, #050505 100%);
-            color: white;
-            text-align: center;
-            overflow-x: hidden;
-            min-height: 100vh;
+        header {
+            width: 100%; padding: 15px 40px; display: flex; justify-content: space-between;
+            align-items: center; border-bottom: 2px solid #ff0000; background: #000;
         }
+        .logo { font-weight: 900; font-size: 20px; }
+        .logo span { color: #ff0000; }
+        .saldo { color: #ffcc00; font-weight: bold; }
 
-        /* ===== TELA INICIAL ===== */
-        .hero {
-            padding: 60px 20px;
+        main { flex: 1; display: flex; justify-content: center; align-items: center; }
+
+        /* PAINEL DE LOGIN IDÊNTICO À FOTO */
+        .login-card {
+            width: 350px; background: #0a0a0a; padding: 40px 30px; border-radius: 15px;
+            border: 2px solid #ff0000; box-shadow: 0 0 35px rgba(255, 0, 0, 0.5); text-align: center;
         }
-
-        .logo {
-            font-size: 48px;
-            font-weight: 900;
-            letter-spacing: 6px;
-            color: var(--primary-red);
-            text-shadow: 0 0 25px var(--primary-red);
-            margin-bottom: 5px;
-        }
-
-        .subtitle {
-            margin-top: 10px;
-            font-size: 1.1rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            opacity: 0.7;
-        }
-
-        .loginBox {
-            margin-top: 40px;
-            background: rgba(20, 0, 0, 0.6);
-            padding: 35px;
-            border-radius: 20px;
-            display: inline-block;
-            box-shadow: var(--glow);
-            border: 1px solid rgba(255, 0, 0, 0.2);
-            backdrop-filter: blur(10px);
-        }
-
-        .loginBox p {
-            font-weight: bold;
-            margin-bottom: 15px;
-        }
-
+        h2 { color: #ff0000; margin-bottom: 25px; text-transform: uppercase; font-size: 20px; }
+        
         input {
-            padding: 14px;
-            border: 1px solid #333;
-            border-radius: 8px;
-            width: 240px;
-            background: #000;
-            color: white;
-            text-align: center;
-            font-size: 1rem;
-            outline: none;
-            transition: 0.3s;
+            width: 100%; padding: 12px; background: transparent; border: 1px solid #fff;
+            border-radius: 5px; color: #fff; text-align: center; margin-bottom: 20px; outline: none;
         }
 
-        input:focus {
-            border-color: var(--primary-red);
-            box-shadow: 0 0 10px var(--primary-red);
+        .btn {
+            width: 100%; padding: 15px; background: #ff0000; border: none; border-radius: 5px;
+            color: #fff; font-weight: bold; cursor: pointer; text-transform: uppercase;
         }
 
-        button {
-            padding: 14px 30px;
-            border: none;
-            border-radius: 8px;
-            background: linear-gradient(45deg, var(--dark-red), var(--primary-red));
-            color: white;
-            font-weight: bold;
-            text-transform: uppercase;
-            cursor: pointer;
-            margin-top: 15px;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3);
+        /* ROLETA (ESCONDIDA) */
+        #game-area { display: none; flex-direction: column; align-items: center; }
+        .roulette {
+            width: 300px; height: 100px; border: 2px solid #333; position: relative;
+            overflow: hidden; background: #050505; margin: 20px;
         }
-
-        button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 25px var(--primary-red);
+        .pointer {
+            position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+            border-left: 20px solid #ff0000; border-top: 15px solid transparent; border-bottom: 15px solid transparent; z-index: 10;
         }
-
-        /* ===== GRID DO JOGO ===== */
-        #game {
-            padding: 20px;
-            animation: fadeIn 0.5s ease-in;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .grid {
-            margin-top: 30px;
-            display: grid;
-            grid-template-columns: repeat(3, 110px);
-            gap: 15px;
-            justify-content: center;
-        }
-
-        .card {
-            position: relative;
-            width: 110px;
-            height: 110px;
-            background: var(--card-bg);
-            border-radius: 12px;
-            overflow: hidden;
-            border: 1px solid rgba(255, 0, 0, 0.3);
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-        }
-
-        .value {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            font-weight: bold;
-            opacity: 0;
-            background: #111;
-        }
-
-        canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            cursor: crosshair;
-        }
-
-        /* ===== RESULTADO ===== */
-        #result {
-            margin-top: 30px;
-            font-size: 24px;
-            font-weight: bold;
-            color: #fff;
-            text-shadow: 0 0 10px var(--primary-red);
-        }
-
-        #msg {
-            color: #ff4d4d;
-            margin-top: 10px;
-            font-size: 0.9rem;
-        }
-
-        /* ===== EFEITOS ===== */
-        .gem {
-            animation: shine 1.5s infinite alternate;
-            color: #fff;
-        }
-
-        @keyframes shine {
-            from { text-shadow: 0 0 5px #fff, 0 0 10px var(--primary-red); }
-            to { text-shadow: 0 0 15px #fff, 0 0 30px var(--primary-red); }
-        }
-
-        .confetti {
-            position: fixed;
-            width: 8px;
-            height: 8px;
-            top: -10px;
-            z-index: 100;
-            animation: fall 3s linear forwards;
-        }
-
-        @keyframes fall {
-            to { transform: translateY(100vh) rotate(720deg); opacity: 0; }
-        }
-
+        .strip { display: flex; flex-direction: column; transition: transform 9s cubic-bezier(0.1, 0, 0.1, 1); }
+        .item { height: 100px; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; color: #444; }
     </style>
 </head>
-
 <body>
 
-<div class="hero">
-    <div class="logo">DEATH STORE</div>
-    <div class="subtitle">Raspadinha Oficial 💎</div>
+    <header>
+        <div class="logo"><span>DEATH</span> STORE</div>
+        <div class="saldo">SALDO: <span id="saldo-txt">0</span></div>
+    </header>
 
-    <div class="loginBox" id="login">
-        <p>AUTENTICAÇÃO DE ACESSO</p>
-        <input id="keyInput" placeholder="Digite sua KEY (DS-XXXX)">
-        <br>
-        <button onclick="checkKey()">ATIVAR KEY</button>
-        <p id="msg"></p>
-    </div>
-</div>
+    <main>
+        <section id="login-area">
+            <div class="login-card">
+                <h2>LOGIN KEY</h2>
+                <input type="text" id="key-input" placeholder="COLE SUA KEY">
+                <button class="btn" onclick="verificarKey()">ATIVAR 1.0M</button>
+                <p id="msg" style="margin-top: 15px; font-size: 12px;"></p>
+            </div>
+        </section>
 
-<div id="game" style="display:none">
-    <p style="font-size: 1.2rem; margin-bottom: 20px;">Sua sorte está lançada! <br> <span style="color: var(--primary-red)">Raspe um quadrado para ganhar.</span></p>
-    <div class="grid" id="grid"></div>
-    <p id="result"></p>
-</div>
+        <section id="game-area">
+            <h2 style="margin-bottom: 5px;">ROLETA DEATH</h2>
+            <div class="roulette">
+                <div class="pointer"></div>
+                <div id="strip" class="strip"></div>
+            </div>
+            <button class="btn" style="width: 200px;" onclick="jogar()">GIRAR (CUSTO: 5)</button>
+        </section>
+    </main>
 
-<script>
-    /* LÓGICA MANTIDA CONFORME ORIGINAL */
-    const keys = {
-        "DS-A9K8":"1.1M 💎", "DS-B1L1":"1.2M 💎", "DS-C2P2":"1.3M 💎", "DS-D8T3":"1.4M 💎", "DS-E6X4":"1.5M 💎",
-        "DS-F47]Q5":"1.2M 💎", "DS-G4M6":"1.1M 💎", "DS-H2Z8":"1.4M 💎", "DS-J3K7":"1.3M 💎", "DS-K1R9":"1.5M 💎",
-        "DS-L5V1":"1.2M 💎", "DS-M4S2":"1.3M 💎", "DS-N3F3":"1.4M 💎", "DS-P2H4":"1.1M 💎", "DS-Q1Y5":"1.5M 💎",
-        "DS-R4C6":"1.2M 💎", "DS-S3D7":"1.3M 💎", "DS-T2B8":"1.4M 💎", "DS-U1E9":"1.1M 💎", "DS-ULTRA40":"40M 💎"
-    };
+    <script>
+        // LISTA DE 5 KEYS ÚNICAS (Você pode mudar os nomes aqui)
+        let keysDisponiveis = ["MORTE-1", "MORTE-2", "MORTE-3", "MORTE-4", "MORTE-5"];
+        let saldo = 0;
 
-    const fakeValues = ["1.1M 💎", "1.2M 💎", "1.3M 💎", "1.4M 💎", "1.5M 💎", "17M 💎", "33M 💎", "50M 💎"];
-    let currentKey = null;
-    let scratched = false;
-    let valores = [];
+        function verificarKey() {
+            const input = document.getElementById('key-input').value.trim();
+            const msg = document.getElementById('msg');
 
-    function checkKey() {
-        const k = document.getElementById("keyInput").value.trim();
-        if(!keys[k]) {
-            document.getElementById("msg").innerText = "❌ Key inválida";
-            return;
-        }
-        if(localStorage.getItem("used_"+k)) {
-            document.getElementById("msg").innerText = "⚠️ Key já utilizada";
-            return;
-        }
-        currentKey = k;
-        document.getElementById("login").style.display = "none";
-        document.getElementById("game").style.display = "block";
-        startGame();
-    }
+            // Verifica se a key está na lista
+            const index = keysDisponiveis.indexOf(input);
 
-    function startGame() {
-        valores = [];
-        for(let i=0; i<9; i++) {
-            valores.push(fakeValues[Math.floor(Math.random()*fakeValues.length)]);
-        }
-        const grid = document.getElementById("grid");
-        grid.innerHTML = "";
-        for(let i=0; i<9; i++) { createCard(i); }
-    }
-
-    function createCard(index) {
-        const card = document.createElement("div");
-        card.className = "card";
-        const value = document.createElement("div");
-        value.className = "value";
-        value.innerHTML = valores[index];
-        const canvas = document.createElement("canvas");
-        canvas.width = 110; canvas.height = 110;
-        const ctx = canvas.getContext("2d");
-
-        // Cor da camada de raspagem moderna (Cinza Escuro Metálico)
-        ctx.fillStyle = "#333";
-        ctx.fillRect(0, 0, 110, 110);
-        // Adiciona um padrão visual na raspagem
-        ctx.strokeStyle = "#444";
-        for(let i=0; i<110; i+=10) {
-            ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, 110); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(110, i); ctx.stroke();
+            if (index !== -1) {
+                // Remove a key da lista para não ser usada novamente
+                keysDisponiveis.splice(index, 1);
+                
+                // Concede saldo e muda de tela
+                saldo = 10; 
+                document.getElementById('saldo-txt').textContent = saldo;
+                document.getElementById('login-area').style.display = 'none';
+                document.getElementById('game-area').style.display = 'flex';
+                prepararRoleta();
+            } else {
+                msg.textContent = "KEY INVÁLIDA OU JÁ UTILIZADA!";
+                msg.style.color = "red";
+            }
         }
 
-        ctx.globalCompositeOperation = "destination-out";
-        let holding = false;
-
-        function scratch(e) {
-            if(!holding || scratched) return;
-            const rect = canvas.getBoundingClientRect();
-            const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
-            const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
-            ctx.beginPath();
-            ctx.arc(x, y, 18, 0, Math.PI * 2);
-            ctx.fill();
-            const pixels = ctx.getImageData(0, 0, 110, 110).data;
-            let count = 0;
-            for(let i=3; i<pixels.length; i+=40) { if(pixels[i] === 0) count++; }
-            if(count > 180) { scratched = true; reveal(index); }
+        function prepararRoleta() {
+            const strip = document.getElementById('strip');
+            strip.innerHTML = '';
+            for(let i=0; i<400; i++) {
+                const div = document.createElement('div');
+                div.className = 'item';
+                div.textContent = i % 5 === 0 ? "KEY 50" : "NADA";
+                if(div.textContent !== "NADA") div.style.color = "#ffcc00";
+                strip.appendChild(div);
+            }
         }
 
-        canvas.addEventListener("mousedown", () => holding = true);
-        window.addEventListener("mouseup", () => holding = false);
-        canvas.addEventListener("mousemove", scratch);
-        canvas.addEventListener("touchstart", () => holding = true);
-        canvas.addEventListener("touchend", () => holding = false);
-        canvas.addEventListener("touchmove", scratch);
+        function jogar() {
+            if(saldo < 5) return;
+            saldo -= 5;
+            document.getElementById('saldo-txt').textContent = saldo;
 
-        card.appendChild(value);
-        card.appendChild(canvas);
-        document.getElementById("grid").appendChild(card);
-    }
+            const strip = document.getElementById('strip');
+            strip.style.transition = 'none';
+            strip.style.transform = 'translateY(0)';
+            void strip.offsetHeight;
 
-    function confetti() {
-        for(let i=0; i<100; i++) {
-            const c = document.createElement("div");
-            c.className = "confetti";
-            c.style.left = Math.random() * 100 + "vw";
-            c.style.background = `hsl(${Math.random() * 360}, 100%, 50%)`;
-            c.style.animationDuration = (2 + Math.random() * 2) + "s";
-            document.body.appendChild(c);
-            setTimeout(() => c.remove(), 4000);
+            strip.style.transition = 'transform 9s cubic-bezier(0.1, 0, 0.1, 1)';
+            // Para sempre no NADA
+            strip.style.transform = 'translateY(-29500px)'; 
+
+            setTimeout(() => {
+                alert("RESULTADO: NADA");
+                if(saldo < 5) {
+                    location.reload(); // Reseta para o login quando acaba o saldo
+                }
+            }, 9500);
         }
-    }
-
-    function reveal(index) {
-        valores[index] = keys[currentKey];
-        document.querySelectorAll(".value").forEach((v, i) => {
-            v.innerHTML = valores[i];
-            if(valores[i].includes("💎")) v.classList.add("gem");
-            v.style.opacity = 1;
-        });
-        document.querySelectorAll("canvas").forEach(c => c.remove());
-        localStorage.setItem("used_" + currentKey, "true");
-        confetti();
-        document.getElementById("result").innerHTML = "🎉 VOCÊ GANHOU: <span style='color:var(--primary-red)'>" + keys[currentKey] + "</span>";
-    }
-</script>
-
+    </script>
 </body>
 </html>
